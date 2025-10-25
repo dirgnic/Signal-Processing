@@ -6,7 +6,7 @@ def fourier_transform_matrix(N):
     n = np.arange(N).reshape((1, N))
     omega = np.exp(-2j * np.pi / N)
     return omega ** (k * n)
-
+# putere exp matrice
 def on_circle(x, omegas):
     z = []
 
@@ -21,12 +21,14 @@ N = 8
 
 matrix = fourier_transform_matrix(N)
 h_matrix = np.transpose(np.conjugate(matrix))
-
+# transpusa conjugatei
 matr_mul = np.matmul(matrix, h_matrix)
 matr_mul = np.subtract(matr_mul, np.diag(np.full(N,matr_mul[0,0])))
+# prim element de pe diag * N, scadem de pe diag
 
 const = 1e-5
-
+# luam in considerare eroare din inmultire
+print(matrix)
 print(f"Norm: {np.linalg.norm(matr_mul)}")
 print(f"I: {0 - const <= np.linalg.norm(matr_mul) <= 0 + const}")
 
@@ -88,6 +90,7 @@ plt.savefig("plots/Winding Frequency.png", format="png")
 plt.show()
 
 # plot - hold - delay -> animation in time
+# ex 3
 
 n = 1000
 t = 1
@@ -104,7 +107,6 @@ sgn = (s1 + s2 + s3)
 
 
 values = [12, 3, 5]
-
 
 
 def fourier_transform(x, number_of_components) -> np.ndarray:
@@ -134,8 +136,8 @@ def fourier_transform_using_winding_frequency(x, omegas):
 
     return X
 
-fourier_transform_winding_frequency = fourier_transform_using_winding_frequency(sgn, omegas=values)
-fourier_transform_over_signal = fourier_transform(sgn, None)
+ft_winding_frequency = fourier_transform_using_winding_frequency(sgn, omegas=values)
+ft_over_signal = fourier_transform(sgn, None)
 
 fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
 fig.suptitle("Fourier Transform")
@@ -148,15 +150,15 @@ axs[0].plot(nts, sgn)
 
 stem_container = axs[1].stem(
     f,
-    np.abs(fourier_transform_over_signal)
+    np.abs(ft_over_signal)
 )
 
 plt.setp(stem_container.markerline, "markersize", 3)
 plt.setp(stem_container.stemlines, "linewidth", 0.3)
 
 stem_container2 = axs[2].stem(
-    list(fourier_transform_winding_frequency.keys()),
-    np.abs(list(fourier_transform_winding_frequency.values()))
+    list(ft_winding_frequency.keys()),
+    np.abs(list(ft_winding_frequency.values()))
 )
 
 plt.setp(stem_container2.markerline, "markersize", 3)
