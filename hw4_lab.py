@@ -23,7 +23,7 @@ def fourier_transform(x, number_of_components=None):
     return X
 
 
-# ex1
+# ex
 # Comparatie timp de executie DFT custom vs numpy.fft
 
 print("\nex 1")
