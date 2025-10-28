@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import time
 from scipy.io import wavfile
 from scipy import signal
+import os
+
+# Create plots_lab4 directory if it doesn't exist
+os.makedirs('plots_lab4', exist_ok=True)
 
 # Functia DFT din laboratorul precedent
 def fourier_transform(x, number_of_components=None):
@@ -53,8 +57,8 @@ plt.semilogy(N_values, numpy_times, label='NumPy FFT')
 plt.xlabel('Dimensiunea vectorului N')
 plt.ylabel('Timp de execuție (s) - scară logaritmică')
 plt.title('Comparație timp de execuție: DFT custom vs NumPy FFT')
-plt.savefig('plots/ex1_comparatie_timpi.pdf', format='pdf')
-plt.savefig('plots/ex1_comparatie_timpi.png', format='png')
+plt.savefig('plots_lab4/ex1_comparatie_timpi.pdf', format='pdf')
+plt.savefig('plots_lab4/ex1_comparatie_timpi.png', format='png')
 plt.show()
 
 print(f"\nSpeedup maxim: {max(custom_times) / min(numpy_times):.2f}x")
@@ -128,8 +132,8 @@ axs[2].set_title(f'Semnal 3: f = {f_signal3} Hz')
 
 fig.suptitle('Fenomenul de Aliasing - Eșantionare sub-Nyquist')
 plt.tight_layout()
-plt.savefig('plots/ex2_aliasing_sub_nyquist.pdf', format='pdf')
-plt.savefig('plots/ex2_aliasing_sub_nyquist.png', format='png')
+plt.savefig('plots_lab4/ex2_aliasing_sub_nyquist.pdf', format='pdf')
+plt.savefig('plots_lab4/ex2_aliasing_sub_nyquist.png', format='png')
 plt.show()
 
 
@@ -176,8 +180,8 @@ axs[2].set_title(f'Semnal 3: f = {f_signal3} Hz')
 
 fig.suptitle('Fără Aliasing - Eșantionare peste Nyquist')
 plt.tight_layout()
-plt.savefig('plots/ex3_fara_aliasing_over_nyquist.pdf', format='pdf')
-plt.savefig('plots/ex3_fara_aliasing_over_nyquist.png', format='png')
+plt.savefig('plots_lab4/ex3_fara_aliasing_over_nyquist.pdf', format='pdf')
+plt.savefig('plots_lab4/ex3_fara_aliasing_over_nyquist.png', format='png')
 plt.show()
 
 
@@ -203,7 +207,7 @@ print(f"eșantionare la 2B (nu 2*f_max), dacă se îndeplinesc anumite condiții
 print(f"În practică, pentru siguranță, se folosește fs >= 2*f_max = {2*f_max_contrabas} Hz")
 
 # Salvam rezultatul intr-un fisier text
-with open('plots/ex4_contrabas_frecventa.txt', 'w') as f:
+with open('plots_lab4/ex4_contrabas_frecventa.txt', 'w') as f:
     f.write("EXERCITIUL 4: Frecventa de esantionare pentru contrabas\n")
     f.write("=" * 60 + "\n\n")
     f.write(f"Frecventele contrabasului: {f_min_contrabas} Hz - {f_max_contrabas} Hz\n")
@@ -258,8 +262,8 @@ for vowel in vowels_order:
 full_signal = np.array(full_signal)
 
 # Salvam ca fisier WAV pentru referinta
-wavfile.write('plots/ex5_vocale_sintetice.wav', fs_audio, (full_signal * 32767).astype(np.int16))
-print(f"Semnal audio salvat: plots/ex5_vocale_sintetice.wav")
+wavfile.write('plots_lab4/ex5_vocale_sintetice.wav', fs_audio, (full_signal * 32767).astype(np.int16))
+print(f"Semnal audio salvat: plots_lab4/ex5_vocale_sintetice.wav")
 
 # ==================== SPECTROGRAMA ====================
 
@@ -339,11 +343,11 @@ for i, vowel in enumerate(vowels_order):
              bbox=dict(boxstyle='round', facecolor='black', alpha=0.5))
 
 plt.tight_layout()
-plt.savefig('plots/ex6_spectrograma_vocale.pdf', format='pdf')
-plt.savefig('plots/ex6_spectrograma_vocale.png', format='png', dpi=300)
+plt.savefig('plots_lab4/ex6_spectrograma_vocale.pdf', format='pdf')
+plt.savefig('plots_lab4/ex6_spectrograma_vocale.png', format='png', dpi=300)
 plt.show()
 
-print("Spectrograma salvată în plots/ex6_spectrograma_vocale.png")
+print("Spectrograma salvată în plots_lab4/ex6_spectrograma_vocale.png")
 print("\nRăspuns Ex. 5: Da, vocalele pot fi distinse pe baza spectrogramei!")
 print("Fiecare vocală are formanti (frecvențe caracteristice) diferiți,")
 print("vizibili ca benzi orizontale în spectrogramă.")
@@ -397,12 +401,12 @@ ax.text(0.5, 0.95, formula_text, transform=ax.transAxes,
         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
 plt.tight_layout()
-plt.savefig('plots/ex7_putere_zgomot.pdf', format='pdf')
-plt.savefig('plots/ex7_putere_zgomot.png', format='png')
+plt.savefig('plots_lab4/ex7_putere_zgomot.pdf', format='pdf')
+plt.savefig('plots_lab4/ex7_putere_zgomot.png', format='png')
 plt.show()
 
 # Salvam rezultatul
-with open('plots/ex7_putere_zgomot.txt', 'w') as f:
+with open('plots_lab4/ex7_putere_zgomot.txt', 'w') as f:
     f.write("EXERCITIUL 7: Calculul puterii zgomotului\n")
     f.write("=" * 60 + "\n\n")
     f.write(f"Date:\n")
@@ -419,5 +423,5 @@ print(f"\nRăspuns: Puterea zgomotului este {P_noise_dB} dB")
 
 print("\n" + "=" * 60)
 print("TOATE EXERCITIILE COMPLETATE!")
-print("Graficele au fost salvate in folderul 'plots/'")
+print("Graficele au fost salvate in folderul 'plots_lab4/'")
 print("=" * 60)
