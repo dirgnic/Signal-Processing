@@ -35,7 +35,7 @@ numpy_times = []
 for N in N_values:
     # Generam un semnal test
     x = np.random.rand(N)
-    
+    # masuram timp in python cum trebe, eventual... scara log
     # Testam implementarea custom
     start_time = time.time()
     X_custom = fourier_transform(x)
@@ -47,6 +47,8 @@ for N in N_values:
     X_numpy = np.fft.fft(x)
     numpy_time = time.time() - start_time
     numpy_times.append(numpy_time)
+
+    # vectori de timp (ptr DFT si ptr FFT) pentru fiecare valoarea din N values
     
     print(f"  Custom DFT: {custom_time:.4f}s, NumPy FFT: {numpy_time:.6f}s")
 
@@ -55,7 +57,7 @@ plt.figure(figsize=(10, 6))
 plt.semilogy(N_values, custom_times, label='Custom DFT')
 plt.semilogy(N_values, numpy_times, label='NumPy FFT')
 plt.xlabel('Dimensiunea vectorului N')
-plt.ylabel('Timp de execuție (s) - scară logaritmică')
+plt.ylabel('Timp de execuție (s) - scara log')
 plt.title('Comparație timp de execuție: DFT custom vs NumPy FFT')
 plt.savefig('plots_lab4/ex1_comparatie_timpi.pdf', format='pdf')
 plt.savefig('plots_lab4/ex1_comparatie_timpi.png', format='png')
@@ -71,8 +73,8 @@ print("\nex 2")
 
 # Parametri semnalului original
 f_signal = 100  # Hz - frecventa semnalului original
-amplitude = 1.0
-phase = 0
+A = 1.0
+phi = 0
 
 # Frecventa de esantionare sub-Nyquist
 fs_sub_nyquist = 150  # Hz - Mai mica decat 2*f_signal = 200 Hz
@@ -80,13 +82,13 @@ print(f"Frecventa semnalului: {f_signal} Hz")
 print(f"Frecventa Nyquist: {2 * f_signal} Hz")
 print(f"Frecventa de esantionare aleasa: {fs_sub_nyquist} Hz (sub-Nyquist)")
 
-# Construim semnalul continuu (pentru vizualizare)
+# Construim semnalul continuu vizual
 t_continuous = np.linspace(0, 0.1, 10000)
-signal_continuous = amplitude * np.sin(2 * np.pi * f_signal * t_continuous + phase)
+signal_continuous = A * np.sin(2 * np.pi * f_signal * t_continuous + phi)
 
 # Esantionam cu frecventa sub-Nyquist
 t_sampled = np.arange(0, 0.1, 1/fs_sub_nyquist)
-signal_sampled = amplitude * np.sin(2 * np.pi * f_signal * t_sampled + phase)
+signal_sampled = A * np.sin(2 * np.pi * f_signal * t_sampled + phi)
 
 # Frecventa aparenta (aliased)
 f_alias = abs(f_signal - fs_sub_nyquist)
@@ -96,11 +98,11 @@ print(f"Frecventa aparenta (alias): {f_alias} Hz")
 f_signal2 = fs_sub_nyquist + f_alias  # 200 Hz
 f_signal3 = 2 * fs_sub_nyquist - f_alias  # 250 Hz
 
-signal2_continuous = amplitude * np.sin(2 * np.pi * f_signal2 * t_continuous + phase)
-signal2_sampled = amplitude * np.sin(2 * np.pi * f_signal2 * t_sampled + phase)
+signal2_continuous = A * np.sin(2 * np.pi * f_signal2 * t_continuous + phi)
+signal2_sampled = A * np.sin(2 * np.pi * f_signal2 * t_sampled + phi)
 
-signal3_continuous = amplitude * np.sin(2 * np.pi * f_signal3 * t_continuous + phase)
-signal3_sampled = amplitude * np.sin(2 * np.pi * f_signal3 * t_sampled + phase)
+signal3_continuous = A * np.sin(2 * np.pi * f_signal3 * t_continuous + phi)
+signal3_sampled = A * np.sin(2 * np.pi * f_signal3 * t_sampled + phi)
 
 print(f"Semnalul 2: {f_signal2} Hz")
 print(f"Semnalul 3: {f_signal3} Hz")
@@ -110,27 +112,27 @@ fig, axs = plt.subplots(3, 1, figsize=(12, 10))
 
 # Semnalul 1
 axs[0].plot(t_continuous, signal_continuous, label=f'Semnal continuu {f_signal} Hz')
-axs[0].plot(t_sampled, signal_sampled, label=f'Eșantioane (fs={fs_sub_nyquist} Hz)')
+axs[0].plot(t_sampled, signal_sampled, label=f'Esantioane (fs={fs_sub_nyquist} Hz)')
 axs[0].plot(t_sampled, signal_sampled)
 axs[0].set_ylabel('Amplitudine')
 axs[0].set_title(f'Semnal 1: f = {f_signal} Hz')
 
 # Semnalul 2
 axs[1].plot(t_continuous, signal2_continuous, label=f'Semnal continuu {f_signal2} Hz')
-axs[1].plot(t_sampled, signal2_sampled, label=f'Eșantioane (fs={fs_sub_nyquist} Hz)')
+axs[1].plot(t_sampled, signal2_sampled, label=f'Esantioane (fs={fs_sub_nyquist} Hz)')
 axs[1].plot(t_sampled, signal2_sampled)
 axs[1].set_ylabel('Amplitudine')
 axs[1].set_title(f'Semnal 2: f = {f_signal2} Hz')
 
 # Semnalul 3
 axs[2].plot(t_continuous, signal3_continuous, label=f'Semnal continuu {f_signal3} Hz')
-axs[2].plot(t_sampled, signal3_sampled, label=f'Eșantioane (fs={fs_sub_nyquist} Hz)')
+axs[2].plot(t_sampled, signal3_sampled, label=f'Esantioane (fs={fs_sub_nyquist} Hz)')
 axs[2].plot(t_sampled, signal3_sampled)
 axs[2].set_xlabel('Timp (s)')
 axs[2].set_ylabel('Amplitudine')
 axs[2].set_title(f'Semnal 3: f = {f_signal3} Hz')
 
-fig.suptitle('Fenomenul de Aliasing - Eșantionare sub-Nyquist')
+fig.suptitle('Fenomenul de Aliasing - Esantionare sub-Nyquist')
 plt.tight_layout()
 plt.savefig('plots_lab4/ex2_aliasing_sub_nyquist.pdf', format='pdf')
 plt.savefig('plots_lab4/ex2_aliasing_sub_nyquist.png', format='png')
@@ -149,43 +151,43 @@ print(f"Frecventa de esantionare aleasa: {fs_over_nyquist} Hz (peste Nyquist)")
 # Esantionam cu frecventa peste Nyquist
 t_sampled_good = np.arange(0, 0.1, 1/fs_over_nyquist)
 
-signal1_sampled_good = amplitude * np.sin(2 * np.pi * f_signal * t_sampled_good + phase)
-signal2_sampled_good = amplitude * np.sin(2 * np.pi * f_signal2 * t_sampled_good + phase)
-signal3_sampled_good = amplitude * np.sin(2 * np.pi * f_signal3 * t_sampled_good + phase)
+signal1_sampled_good = A * np.sin(2 * np.pi * f_signal * t_sampled_good + phi)
+signal2_sampled_good = A * np.sin(2 * np.pi * f_signal2 * t_sampled_good + phi)
+signal3_sampled_good = A * np.sin(2 * np.pi * f_signal3 * t_sampled_good + phi)
 
 # Plotare
 fig, axs = plt.subplots(3, 1, figsize=(12, 10))
 
 # Semnalul 1
 axs[0].plot(t_continuous, signal_continuous, label=f'Semnal continuu {f_signal} Hz')
-axs[0].plot(t_sampled_good, signal1_sampled_good, label=f'Eșantioane (fs={fs_over_nyquist} Hz)')
+axs[0].plot(t_sampled_good, signal1_sampled_good, label=f'Esantioane (fs={fs_over_nyquist} Hz)')
 axs[0].plot(t_sampled_good, signal1_sampled_good)
 axs[0].set_ylabel('Amplitudine')
 axs[0].set_title(f'Semnal 1: f = {f_signal} Hz', fontsize=12)
 
 # Semnalul 2
 axs[1].plot(t_continuous, signal2_continuous, label=f'Semnal continuu {f_signal2} Hz')
-axs[1].plot(t_sampled_good, signal2_sampled_good, label=f'Eșantioane (fs={fs_over_nyquist} Hz)')
+axs[1].plot(t_sampled_good, signal2_sampled_good, label=f'Esantioane (fs={fs_over_nyquist} Hz)')
 axs[1].plot(t_sampled_good, signal2_sampled_good)
 axs[1].set_ylabel('Amplitudine')
 axs[1].set_title(f'Semnal 2: f = {f_signal2} Hz')
 
 # Semnalul 3
 axs[2].plot(t_continuous, signal3_continuous, label=f'Semnal continuu {f_signal3} Hz')
-axs[2].plot(t_sampled_good, signal3_sampled_good, label=f'Eșantioane (fs={fs_over_nyquist} Hz)')
+axs[2].plot(t_sampled_good, signal3_sampled_good, label=f'Esantioane (fs={fs_over_nyquist} Hz)')
 axs[2].plot(t_sampled_good, signal3_sampled_good)
 axs[2].set_xlabel('Timp (s)')
 axs[2].set_ylabel('Amplitudine')
 axs[2].set_title(f'Semnal 3: f = {f_signal3} Hz')
 
-fig.suptitle('Fără Aliasing - Eșantionare peste Nyquist')
+fig.suptitle('Fără Aliasing - Esantionare peste Nyquist')
 plt.tight_layout()
 plt.savefig('plots_lab4/ex3_fara_aliasing_over_nyquist.pdf', format='pdf')
 plt.savefig('plots_lab4/ex3_fara_aliasing_over_nyquist.png', format='png')
 plt.show()
 
 
-# 3x 4
+# ex 4
 # Frecventa de esantionare pentru contrabas
 
 
@@ -202,13 +204,11 @@ fs_min_bandpass = 2 * B
 print(f"Frecventele contrabasului: {f_min_contrabas} Hz - {f_max_contrabas} Hz")
 print(f"Latimea de banda (B): {B} Hz")
 print(f"Frecventa minima de esantionare (fs >= 2B): {fs_min_bandpass} Hz")
-print(f"\nNotă: Pentru un semnal trece-bandă, teorema eșantionării permite")
-print(f"eșantionare la 2B (nu 2*f_max), dacă se îndeplinesc anumite condiții.")
-print(f"În practică, pentru siguranță, se folosește fs >= 2*f_max = {2*f_max_contrabas} Hz")
+print(f"Se foloseste fs >= 2*f_max = {2*f_max_contrabas} Hz")
 
 # Salvam rezultatul intr-un fisier text
 with open('plots_lab4/ex4_contrabas_frecventa.txt', 'w') as f:
-    f.write("EXERCITIUL 4: Frecventa de esantionare pentru contrabas\n")
+    f.write("ex 4: Frecventa de esantionare pentru contrabas\n")
     f.write("=" * 60 + "\n\n")
     f.write(f"Frecventele contrabasului: {f_min_contrabas} Hz - {f_max_contrabas} Hz\n")
     f.write(f"Latimea de banda (B): {B} Hz\n")
@@ -216,11 +216,11 @@ with open('plots_lab4/ex4_contrabas_frecventa.txt', 'w') as f:
     f.write(f"Frecventa minima de esantionare (practic, sigur): {2*f_max_contrabas} Hz\n")
 
 
-# ==================== EXERCITIUL 5 & 6 ====================
+# ex 5 si 6
 # Spectrograma pentru vocale
 
 print("ex 5 si 6")
-print("Generăm un semnal audio sintetic cu vocale pentru demonstrație...")
+print("Gen un semnal audio sintetic cu vocale pentru demo")
 
 # Generam un semnal sintetic care simuleaza vocale
 # Vocalele au formanti (frecvente caracteristice)
@@ -265,7 +265,44 @@ full_signal = np.array(full_signal)
 wavfile.write('plots_lab4/ex5_vocale_sintetice.wav', fs_audio, (full_signal * 32767).astype(np.int16))
 print(f"Semnal audio salvat: plots_lab4/ex5_vocale_sintetice.wav")
 
-# ==================== SPECTROGRAMA ====================
+file_names = ['audio/a.wav', 'audio/e.wav', 'audio/i.wav', 'audio/o.wav', 'audio/u.wav']
+full_signal = []
+
+print("Incarcarea si concatenarea vocalelor din fisiere WAV:")
+
+for i, file_name in enumerate(file_names):
+    try:
+        # Citim fisierul WAV
+        fs_read, signal_data = wavfile.read(file_name)
+
+        # Verificam si setam fs_audio la prima citire
+        if i == 0:
+            fs_audio = fs_read
+            print(f"Frecventa de esantionare setata la {fs_audio} Hz.")
+        elif fs_read != fs_audio:
+            print(f"ATENTIE: Fisierul {file_name} are fs diferita ({fs_read} Hz). Se recomanda uniformizarea lor.")
+
+        # Normalizam semnalul la [-1, 1] daca nu este deja (pentru int16)
+        if signal_data.dtype == np.int16:
+            signal_normalized = signal_data.astype(np.float64) / 32768.0
+        else:
+            signal_normalized = signal_data.astype(np.float64)
+
+        full_signal.extend(signal_normalized)
+        print(f" - Fisier '{file_name}' incarcat.")
+
+    except FileNotFoundError:
+        print(f"EROARE: Fisierul '{file_name}' nu a fost gasit!")
+        # Puteti alege sa iesiti sau sa continuati cu fisierul urmator
+
+full_signal = np.array(full_signal)
+
+# --- Pasul 2: Salvati semnalul complet (Optional, doar pentru referinta) ---
+# Aceasta linie devine redundanta daca nu generati, dar o puteti pastra
+# pentru a salva concatenarea finala.
+wavfile.write('plots_lab4/ex5_vocale_reale_concatenate.wav', fs_audio, (full_signal * 32767).astype(np.int16))
+print(f"\nSemnal audio concatenat salvat: plots_lab4/ex5_vocale_reale_concatenate.wav")
+# sprectrograma
 
 def compute_spectrogram(signal, fs, window_percent=1, overlap_percent=50):
     """
@@ -326,7 +363,7 @@ plt.figure(figsize=(14, 8))
 plt.imshow(20 * np.log10(spectrogram + 1e-10), aspect='auto', origin='lower', 
            cmap='viridis', extent=[time_axis[0], time_axis[-1], freq_axis[0], freq_axis[-1]])
 plt.colorbar(label='Magnitudine (dB)')
-plt.ylabel('Frecvență (Hz)', fontsize=12)
+plt.ylabel('Frecve (Hz)', fontsize=12)
 plt.xlabel('Timp (s)', fontsize=12)
 plt.title('Spectrograma Vocale: a, e, i, o, u', fontsize=14, fontweight='bold')
 plt.ylim([0, 4000])  # Limitam la frecventele relevante pentru voce
@@ -353,12 +390,10 @@ print("Fiecare vocală are formanti (frecvențe caracteristice) diferiți,")
 print("vizibili ca benzi orizontale în spectrogramă.")
 
 
-# ==================== EXERCITIUL 7 ====================
+# ex 7
 # Calculul puterii zgomotului
 
-print("\n" + "=" * 60)
-print("EXERCITIUL 7: Calculul puterii zgomotului")
-print("=" * 60)
+print("ex 7 - Calculul puterii zgomotului")
 
 # Date
 P_signal_dB = 90  # dB
@@ -407,8 +442,7 @@ plt.show()
 
 # Salvam rezultatul
 with open('plots_lab4/ex7_putere_zgomot.txt', 'w') as f:
-    f.write("EXERCITIUL 7: Calculul puterii zgomotului\n")
-    f.write("=" * 60 + "\n\n")
+    f.write("ex 7: Calculul puterii zgomotului\n")
     f.write(f"Date:\n")
     f.write(f"  Puterea semnalului: P_signal = {P_signal_dB} dB\n")
     f.write(f"  Raport semnal-zgomot: SNR = {SNR_dB} dB\n\n")
@@ -417,11 +451,6 @@ with open('plots_lab4/ex7_putere_zgomot.txt', 'w') as f:
     f.write(f"  P_noise = P_signal - SNR\n")
     f.write(f"  P_noise = {P_signal_dB} dB - {SNR_dB} dB\n")
     f.write(f"  P_noise = {P_noise_dB} dB\n\n")
-    f.write(f"Răspuns: Puterea zgomotului este {P_noise_dB} dB\n")
+    f.write(f"Raspuns: Puterea zgomotului este {P_noise_dB} dB\n")
 
-print(f"\nRăspuns: Puterea zgomotului este {P_noise_dB} dB")
-
-print("\n" + "=" * 60)
-print("TOATE EXERCITIILE COMPLETATE!")
-print("Graficele au fost salvate in folderul 'plots_lab4/'")
-print("=" * 60)
+print(f"\nRaspuns: Puterea zgomotului este {P_noise_dB} dB")

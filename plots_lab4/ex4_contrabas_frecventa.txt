@@ -1,4 +1,4 @@
-EXERCITIUL 4: Frecventa de esantionare pentru contrabas
+ex 4: Frecventa de esantionare pentru contrabas
 ============================================================
 
 Frecventele contrabasului: 40 Hz - 200 Hz
