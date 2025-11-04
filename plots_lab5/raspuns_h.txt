@@ -1,0 +1,38 @@
+
+Metoda de determinare a datei de inceput prin analiza semnalului:
+
+Pasi:
+1. Identificare pattern zilnic
+   - Analizam FFT si gasim frecventa dominanta de 365 aparitii/an (1 zi)
+   - Aceasta ne arata ca exista un ciclu zilnic clar in trafic
+
+2. Identificare pattern saptamanal
+   - Cautam pattern cu perioada de 7 zile
+   - Zilele de weekend au trafic diferit fata de zilele lucratoare
+   
+3. Identificare pattern anual
+   - Cautam variatii sezoniere (vara/iarna, sarbatori)
+   - Identificam lunile prin pattern-uri caracteristice
+   
+4. Sincronizare cu calendarul
+   - Folosind pattern-urile saptamanale, identificam zilele de luni
+   - Folosind pattern-urile lunare/sezoniere, identificam lunile
+   - Combinam informatiile pentru a determina data exacta
+
+Neajunsuri si limitari:
+
+1. Dependenta de durata semnalului
+   - Pentru semnal de 2+ ani: putem determina luna si ziua cu acuratete mare
+   - Pentru semnal de 1 an: putem determina ziua dar luna este ambigua
+   - Pentru semnal de < 1 saptamana: imposibil de determinat ziua
+
+2. Factori care afecteaza acuratetea:
+   - Evenimente exceptionale (sarbatori, calamitati) distorsioneaza pattern-ul
+   - Schimbari in comportament (pandemie, constructii) afecteaza regularitatea
+   - Zgomot in date reduce claritatea pattern-urilor
+   - Esantioane lipsa sau eronate creeaza discontinuitati
+
+3. Presupuneri necesare:
+   - Traficul urmeaza pattern-uri regulate saptamanale
+   - Nu exista modificari majore de infrastructura in perioada masurarii
+   - Pattern-ul seasonal este consistent

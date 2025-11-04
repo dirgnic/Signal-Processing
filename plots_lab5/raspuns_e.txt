@@ -1,0 +1,10 @@
+
+Componenta continua (DC) din transformata Fourier:
+Magnitudine: 2541266.00
+Valoare medie a semnalului: 138.96
+
+Decizie: DA, semnalul prezinta o componenta continua semnificativa.
+
+Eliminarea componentei continue:
+
+Componenta DC eliminata prin scaderea mediei: 138.96
