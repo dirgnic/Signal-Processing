@@ -5,12 +5,9 @@ from scipy.io import wavfile
 from scipy import signal
 import os
 
-# Create plots_lab4 directory if it doesn't exist
 os.makedirs('plots_lab4', exist_ok=True)
 
-# Functia DFT din laboratorul precedent
 def fourier_transform(x, number_of_components=None):
-    """Discrete Fourier Transform implementata manual"""
     n = len(x) if number_of_components is None else number_of_components
     X = np.zeros(n, dtype=np.complex128)
     
@@ -33,16 +30,14 @@ custom_times = []
 numpy_times = []
 
 for N in N_values:
-    # Generam un semnal test
+    # semnal test
     x = np.random.rand(N)
     # masuram timp in python cum trebe, eventual... scara log
-    # Testam implementarea custom
     start_time = time.time()
     X_custom = fourier_transform(x)
     custom_time = time.time() - start_time
     custom_times.append(custom_time)
-    
-    # Testam numpy.fft
+
     start_time = time.time()
     X_numpy = np.fft.fft(x)
     numpy_time = time.time() - start_time
@@ -65,7 +60,6 @@ plt.show()
 
 print(f"\nSpeedup maxim: {max(custom_times) / min(numpy_times):.2f}x")
 
-
 # ex 2
 # Aliasing - esantionare sub-Nyquist
 
@@ -78,22 +72,18 @@ phi = 0
 
 # Frecventa de esantionare sub-Nyquist
 fs_sub_nyquist = 150  # Hz - Mai mica decat 2*f_signal = 200 Hz
-print(f"Frecventa semnalului: {f_signal} Hz")
-print(f"Frecventa Nyquist: {2 * f_signal} Hz")
+print(f"Frecventa semnalului: {f_signal} Hz, frecventa Nyquist: {2 * f_signal} Hz")
 print(f"Frecventa de esantionare aleasa: {fs_sub_nyquist} Hz (sub-Nyquist)")
 
-# Construim semnalul continuu vizual
+# Construim semnalul continuu vizual, esantionam cu frecventa sub-Nyquist
 t_continuous = np.linspace(0, 0.1, 10000)
 signal_continuous = A * np.sin(2 * np.pi * f_signal * t_continuous + phi)
-
-# Esantionam cu frecventa sub-Nyquist
 t_sampled = np.arange(0, 0.1, 1/fs_sub_nyquist)
 signal_sampled = A * np.sin(2 * np.pi * f_signal * t_sampled + phi)
 
 # Frecventa aparenta (aliased)
 f_alias = abs(f_signal - fs_sub_nyquist)
 print(f"Frecventa aparenta (alias): {f_alias} Hz")
-
 # Alte doua semnale care produc acelasi alias
 f_signal2 = fs_sub_nyquist + f_alias  # 200 Hz
 f_signal3 = 2 * fs_sub_nyquist - f_alias  # 250 Hz
@@ -137,7 +127,6 @@ plt.tight_layout()
 plt.savefig('plots_lab4/ex2_aliasing_sub_nyquist.pdf', format='pdf')
 plt.savefig('plots_lab4/ex2_aliasing_sub_nyquist.png', format='png')
 plt.show()
-
 
 # ex 3
 # Fara aliasing - esantionare peste Nyquist
@@ -186,10 +175,8 @@ plt.savefig('plots_lab4/ex3_fara_aliasing_over_nyquist.pdf', format='pdf')
 plt.savefig('plots_lab4/ex3_fara_aliasing_over_nyquist.png', format='png')
 plt.show()
 
-
 # ex 4
 # Frecventa de esantionare pentru contrabas
-
 
 print("ex 4")
 

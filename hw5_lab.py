@@ -321,7 +321,9 @@ Neajunsuri si limitari:
    - Nu exista modificari majore de infrastructura in perioada masurarii
    - Pattern-ul seasonal este consistent
 """
-
+#  Exercitiul h) - metoda pentru determinare timp x din date y (frecventa)
+#
+#
 print(answer_h)
 
 with open('plots_lab5/raspuns_h.txt', 'w') as f:
