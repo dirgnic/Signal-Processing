@@ -44,12 +44,12 @@ with open('plots_lab5/raspuns_a.txt', 'w') as f:
 print("Exercitiul b) - Intervalul de timp")
 
 first_date = data["Datetime"].iloc[0]
-last_date = data["Datetime"].iloc[-1]
-samples_per_day = 24
+last_date = data["Datetime"].iloc[-1] # ultima valoare - det interval
+samples_per_day = 24 # un sample pe ora
 
 answer_b = f"""
 Numar total de esantioane: {num_samples}
-Esantioane pe zi: {samples_per_day}
+Esantioane pe zi: {samples_per_day} 
 Durata: {num_samples} / {samples_per_day} = {num_samples / samples_per_day:.0f} zile
 
 Data de inceput: {first_date}
@@ -66,7 +66,7 @@ with open('plots_lab5/raspuns_b.txt', 'w') as f:
 # Exercitiul c) - Frecventa maxima
 print("Exercitiul c) - Frecventa maxima")
 
-nyquist_freq = sample_rate_hz / 2
+nyquist_freq = sample_rate_hz / 2 # calculam nyquist (sample rate/2) e frecv maxima
 
 answer_c = f"""
 Daca semnalul a fost esantionat corect (fara aliere), frecventa maxima 
@@ -88,10 +88,15 @@ with open('plots_lab5/raspuns_c.txt', 'w') as f:
 # Exercitiul d) - Transformata Fourier
 print("Exercitiul d) - Transformata Fourier")
 
+# Calculate FFT
 fft_result = np.fft.fft(traffic_count)
 fft_magnitude = np.abs(fft_result)
+
+# Calculate frequency bins
+# d=3600 because sampling period is 3600 seconds (1 hour)
 fft_freqs = np.fft.fftfreq(num_samples, d=3600)
 
+# Get only positive frequencies
 positive_freq_indices = fft_freqs > 0
 positive_freqs = fft_freqs[positive_freq_indices]
 positive_magnitudes = fft_magnitude[positive_freq_indices]
@@ -253,7 +258,7 @@ if len(monday_indices) > 0:
     month_data = data.iloc[first_monday_idx:end_idx]
     month_traffic = month_data["Count"].values
     month_time = np.arange(len(month_traffic))
-    
+    # starting on a monday - repetition
     fig, ax = plt.subplots(figsize=(14, 6))
     ax.plot(month_time, month_traffic, linewidth=1)
     ax.set_title(f'Trafic pentru o Luna (28 zile, incepand cu {month_data["Datetime"].iloc[0]})')
