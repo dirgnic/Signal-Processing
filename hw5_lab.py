@@ -327,34 +327,49 @@ with open('plots_lab5/raspuns_h.txt', 'w') as f:
 
 print("Exercitiul i) - Filtrare (eliminare componente inalta frecventa)")
 
-cutoff_percentage = 0.95
+# Keep only the lowest 5% of frequency components (more aggressive filtering)
+cutoff_percentage = 0.05
 num_freqs_to_keep = int(len(fft_no_dc) * cutoff_percentage)
 
+# Zero out high-frequency components
 fft_filtered = fft_no_dc.copy()
 fft_filtered[num_freqs_to_keep:-num_freqs_to_keep] = 0
 
+# Inverse FFT to get filtered signal
 traffic_filtered = np.real(np.fft.ifft(fft_filtered))
 traffic_filtered_with_mean = traffic_filtered + mean_value
+
+print(f"Frecvente pastrate: {num_freqs_to_keep} din {len(fft_no_dc)} ({cutoff_percentage*100}%)")
 
 if len(monday_indices) > 0:
     month_original = month_traffic
     month_filtered = traffic_filtered_with_mean[first_monday_idx:end_idx]
     
-    fig, axes = plt.subplots(2, 1, figsize=(14, 10))
+    fig, axes = plt.subplots(3, 1, figsize=(14, 12))
     
-    axes[0].plot(month_time, month_original, linewidth=1, alpha=0.7, label='Original')
-    axes[0].plot(month_time, month_filtered, linewidth=2, label='Filtrat', color='red')
-    axes[0].set_title('Comparatie: Semnal Original vs Filtrat')
+    # Subplot 1: Original signal
+    axes[0].plot(month_time, month_original, linewidth=1, color='blue', label='Original')
+    axes[0].set_title('Semnal Original')
     axes[0].set_xlabel('Ore')
     axes[0].set_ylabel('Numar vehicule')
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
     
-    axes[1].plot(month_time, month_original - month_filtered[:len(month_original)], linewidth=0.5, color='green')
-    axes[1].set_title('Diferenta (zgomot eliminat)')
+    # Subplot 2: Filtered signal
+    axes[1].plot(month_time, month_filtered, linewidth=1, color='red', label='Filtrat')
+    axes[1].set_title('Semnal Filtrat (componente frecventa joasa pastrate)')
     axes[1].set_xlabel('Ore')
-    axes[1].set_ylabel('Diferenta')
+    axes[1].set_ylabel('Numar vehicule')
+    axes[1].legend()
     axes[1].grid(True, alpha=0.3)
+    
+    # Subplot 3: Removed noise (difference)
+    axes[2].plot(month_time, month_original - month_filtered[:len(month_original)], linewidth=0.5, color='green', label='Zgomot eliminat')
+    axes[2].set_title('Componente de Frecventa Inalta Eliminate (Zgomot)')
+    axes[2].set_xlabel('Ore')
+    axes[2].set_ylabel('Diferenta')
+    axes[2].legend()
+    axes[2].grid(True, alpha=0.3)
     
     plt.tight_layout()
     plt.savefig('plots_lab5/ex_i_filtrare.pdf', format='pdf')
