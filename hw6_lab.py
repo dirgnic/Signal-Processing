@@ -11,79 +11,59 @@ os.makedirs('plots_lab6', exist_ok=True)
 
 print("Laborator 6 - Convolutie si Filtre\n")
 
-# Ex 1 - Reproducere desene sinc
-print("Ex 1 - Esantionare si reconstructie sinc^2")
+# Ex 1
+print("Ex 1 - sinc^2: esantionare si reconstructie")
 B = 1
-t_cont = np.linspace(-3, 3, 3000)
-x_cont = np.sinc(B * t_cont)**2
-
-fs_values = [1, 1.5, 2, 4]
+t = np.linspace(-3, 3, 3000)
+x_orig = np.sinc(B * t)**2
 
 fig, axes = plt.subplots(4, 1, figsize=(14, 12))
 
-for i, fs in enumerate(fs_values):
+for i, fs in enumerate([1, 1.5, 2, 4]):
     Ts = 1 / fs
+    n = np.arange(-int(3*fs), int(3*fs)+1)
+    ts = n * Ts
+    xs = np.sinc(B * ts)**2
     
-    n_samples = int(6 * fs) + 1
-    n_idx = np.arange(-n_samples//2, n_samples//2 + 1)
-    t_samples = n_idx * Ts
-    x_samples = np.sinc(B * t_samples)**2
+    x_rec = sum(xs[k] * np.sinc((t - ts[k]) / Ts) for k in range(len(ts)))
     
-    x_recon = np.zeros_like(t_cont)
-    for n, (tn, xn) in enumerate(zip(t_samples, x_samples)):
-        x_recon += xn * np.sinc((t_cont - tn) / Ts)
-    
-    axes[i].plot(t_cont, x_cont, 'b-', linewidth=1, alpha=0.5, label='Original')
-    axes[i].stem(t_samples, x_samples, linefmt='r-', markerfmt='ro', basefmt='k-', label='Esantioane')
-    axes[i].plot(t_cont, x_recon, 'g--', linewidth=1.5, alpha=0.8, label='Reconstruit')
-    axes[i].set_title(f'fs = {fs} Hz (Ts = {Ts:.2f}s)')
-    axes[i].set_xlabel('t')
-    axes[i].set_ylabel('x(t)')
+    axes[i].plot(t, x_orig, 'b-', alpha=0.4, label='x(t)')
+    axes[i].stem(ts, xs, linefmt='r-', markerfmt='ro', basefmt='k-', label='x[n]')
+    axes[i].plot(t, x_rec, 'g--', alpha=0.7, label='x_rec(t)')
+    axes[i].set_title(f'fs={fs}Hz, Ts={Ts:.2f}s')
     axes[i].legend()
-    axes[i].grid(True, alpha=0.3)
+    axes[i].grid(alpha=0.3)
     axes[i].set_xlim(-3, 3)
 
 plt.tight_layout()
-plt.savefig('plots_lab6/ex1_sinc_esantionare.pdf', format='pdf')
-plt.savefig('plots_lab6/ex1_sinc_esantionare.png', format='png')
+plt.savefig('plots_lab6/ex1_sinc_esantionare.pdf')
+plt.savefig('plots_lab6/ex1_sinc_esantionare.png')
 plt.close()
-print("Observatie: Sub Nyquist (fs<2B) apare aliasing, peste Nyquist reconstructia este perfecta\n")
-
-# Variatie B
-print("Ex 1b - Variatie B")
-B_values = [0.5, 1, 2]
-fs = 2
 
 fig, axes = plt.subplots(3, 1, figsize=(14, 10))
+fs = 2
 
-for i, B in enumerate(B_values):
-    x_cont = np.sinc(B * t_cont)**2
+for i, B in enumerate([0.5, 1, 2]):
+    x_orig = np.sinc(B * t)**2
     Ts = 1 / fs
+    n = np.arange(-int(3*fs), int(3*fs)+1)
+    ts = n * Ts
+    xs = np.sinc(B * ts)**2
     
-    n_samples = int(6 * fs) + 1
-    n_idx = np.arange(-n_samples//2, n_samples//2 + 1)
-    t_samples = n_idx * Ts
-    x_samples = np.sinc(B * t_samples)**2
+    x_rec = sum(xs[k] * np.sinc((t - ts[k]) / Ts) for k in range(len(ts)))
     
-    x_recon = np.zeros_like(t_cont)
-    for n, (tn, xn) in enumerate(zip(t_samples, x_samples)):
-        x_recon += xn * np.sinc((t_cont - tn) / Ts)
-    
-    axes[i].plot(t_cont, x_cont, 'b-', linewidth=1, alpha=0.5, label='Original')
-    axes[i].stem(t_samples, x_samples, linefmt='r-', markerfmt='ro', basefmt='k-', label='Esantioane')
-    axes[i].plot(t_cont, x_recon, 'g--', linewidth=1.5, alpha=0.8, label='Reconstruit')
-    axes[i].set_title(f'B = {B}, fs = {fs} Hz (Nyquist = {2*B} Hz)')
-    axes[i].set_xlabel('t')
-    axes[i].set_ylabel('x(t)')
-    axes[i].legend()
-    axes[i].grid(True, alpha=0.3)
+    axes[i].plot(t, x_orig, 'b-', alpha=0.4)
+    axes[i].stem(ts, xs, linefmt='r-', markerfmt='ro', basefmt='k-')
+    axes[i].plot(t, x_rec, 'g--', alpha=0.7)
+    axes[i].set_title(f'B={B}, fs={fs}Hz, Nyquist={2*B}Hz')
+    axes[i].grid(alpha=0.3)
     axes[i].set_xlim(-3, 3)
 
 plt.tight_layout()
-plt.savefig('plots_lab6/ex1_variatie_B.pdf', format='pdf')
-plt.savefig('plots_lab6/ex1_variatie_B.png', format='png')
+plt.savefig('plots_lab6/ex1_variatie_B.pdf')
+plt.savefig('plots_lab6/ex1_variatie_B.png')
 plt.close()
-print("Observatie: B creste -> banda creste -> necesita fs mai mare\n")
+print("Obs: fs<2B -> aliasing, fs>=2B -> perfect\n")
 
 # Ex 2 - Convolutie repetata
 print("Ex 2 - Convolutie repetata")
@@ -134,59 +114,45 @@ r_fft = np.real(np.fft.ifft(p_fft * q_fft))
 similar = np.allclose(r_conv, r_fft)
 print(f"Rezultate identice (convolutie vs FFT): {similar}\n")
 
-# Ex 4 - Deplasare circulara
+# Ex 4
 print("Ex 4 - Deplasare circulara")
 n = 20
-t_sig = np.linspace(0, 2*np.pi, n)
-x = np.sin(3 * t_sig)
-
+x = np.sin(3 * np.linspace(0, 2*np.pi, n, endpoint=False))
 d = 5
 y = np.roll(x, d)
 
 X = np.fft.fft(x)
 Y = np.fft.fft(y)
 
-# Metoda 1: Corelatie (inmultire)
-result1 = np.fft.ifft(X * np.conj(Y))
-d_recovered1 = np.argmax(np.abs(result1))
+r1 = np.fft.ifft(X * np.conj(Y))
+d1 = np.argmax(np.abs(r1))
 
-# Metoda 2: Impartire (deconvolutie)
-result2 = np.fft.ifft(Y / (X + 1e-10))
-phase = np.angle(result2)
-d_recovered2 = int(np.round(np.mean(phase[1:]) * n / (2 * np.pi))) % n
+r2 = np.fft.ifft(Y / (X + 1e-10))
+d2 = int(np.round(np.angle(r2[1]) * n / (2*np.pi))) % n
 
 fig, axes = plt.subplots(3, 1, figsize=(14, 10))
 
 axes[0].stem(x, linefmt='b-', markerfmt='bo', basefmt='k-')
-axes[0].set_title(f'Semnal Original x[n] (sinusoida)')
-axes[0].set_xlabel('n')
-axes[0].set_ylabel('x[n]')
-axes[0].grid(True, alpha=0.3)
+axes[0].set_title('x[n] original')
+axes[0].grid(alpha=0.3)
 
 axes[1].stem(y, linefmt='r-', markerfmt='ro', basefmt='k-')
-axes[1].set_title(f'Semnal Deplasat y[n] (d = {d})')
-axes[1].set_xlabel('n')
-axes[1].set_ylabel('y[n]')
-axes[1].grid(True, alpha=0.3)
+axes[1].set_title(f'y[n] deplasat circular cu d={d}')
+axes[1].grid(alpha=0.3)
 
-axes[2].plot(np.abs(result1), 'g-o', label=f'Metoda 1 (corelatie): d={d_recovered1}')
-axes[2].axvline(x=d_recovered1, color='g', linestyle='--', alpha=0.5)
-axes[2].set_title('Recuperare deplasare prin corelatie')
-axes[2].set_xlabel('d')
-axes[2].set_ylabel('Magnitudine')
+axes[2].plot(np.abs(r1), 'g-o', label=f'IFFT(X*conj(Y)): d={d1}')
+axes[2].axvline(d1, color='g', linestyle='--', alpha=0.5)
+axes[2].set_title('Recuperare d prin corelatie')
 axes[2].legend()
-axes[2].grid(True, alpha=0.3)
+axes[2].grid(alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('plots_lab6/ex4_deplasare_circulara.pdf', format='pdf')
-plt.savefig('plots_lab6/ex4_deplasare_circulara.png', format='png')
+plt.savefig('plots_lab6/ex4_deplasare_circulara.pdf')
+plt.savefig('plots_lab6/ex4_deplasare_circulara.png')
 plt.close()
 
-print(f"Deplasare originala: d = {d}")
-print(f"Metoda 1 (IFFT(FFT(x) * conj(FFT(y)))): d = {d_recovered1}")
-print(f"Metoda 2 (IFFT(FFT(y) / FFT(x))): d = {d_recovered2}")
-print("Diferenta: Metoda 1 (corelatie) gaseste maximul corelatiei")
-print("           Metoda 2 (deconvolutie) recupereaza faza dar e mai sensibila la zgomot\n")
+print(f"d original={d}, metoda1(corelatie)={d1}, metoda2(deconv)={d2}")
+print("Obs: metoda1=corelatie robusta, metoda2=deconvolutie sensibila zgomot\n")
 
 # Ex 5 - Ferestre
 print("Ex 5 - Ferestre")
