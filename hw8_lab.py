@@ -9,31 +9,29 @@ os.makedirs('plots_lab8', exist_ok=True)
 
 print("Laborator 8 - Modele AR\n")
 
-# a) Generare serie temporala
-print("a) Generare serie temporala")
+# a) - serie temporala
 N = 1000
 t = np.arange(N)
+t = 0.01 * t**2 - 0.5 * t + 10
+s = 5 * np.sin(2 * np.pi * t / 50) + 3 * np.cos(2 * np.pi * t / 100)
+n = np.random.normal(0, 2, N)
 
-trend = 0.01 * t**2 - 0.5 * t + 10
-season = 5 * np.sin(2 * np.pi * t / 50) + 3 * np.cos(2 * np.pi * t / 100)
-noise = np.random.normal(0, 2, N)
-
-y = trend + season + noise
+y = t + s+ n # trend + sezon + zgomot
 
 fig, axes = plt.subplots(4, 1, figsize=(14, 10))
 axes[0].plot(y)
 axes[0].set_title('Serie temporala completa')
 axes[0].grid(alpha=0.3)
 
-axes[1].plot(trend)
+axes[1].plot(t)
 axes[1].set_title('Trend (grad 2)')
 axes[1].grid(alpha=0.3)
 
-axes[2].plot(season)
+axes[2].plot(s)
 axes[2].set_title('Sezon (2 frecvente)')
 axes[2].grid(alpha=0.3)
 
-axes[3].plot(noise)
+axes[3].plot(n)
 axes[3].set_title('Zgomot alb gaussian')
 axes[3].grid(alpha=0.3)
 
