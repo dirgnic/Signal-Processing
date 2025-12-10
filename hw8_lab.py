@@ -3,11 +3,14 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
+from my_module.funcs import plot
 
 np.random.seed(42)
 os.makedirs('plots_lab8', exist_ok=True)
 
 print("Laborator 8 - Modele AR\n")
+
+
 
 # a) - serie temporala
 N = 1000
@@ -19,21 +22,18 @@ n = np.random.normal(0, 2, N)
 y = t + s+ n # trend + sezon + zgomot
 
 fig, axes = plt.subplots(4, 1, figsize=(14, 10))
-axes[0].plot(y)
-axes[0].set_title('Serie temporala completa')
-axes[0].grid(alpha=0.3)
 
-axes[1].plot(t)
-axes[1].set_title('Trend (grad 2)')
-axes[1].grid(alpha=0.3)
+axes[0].plot(t)
+axes[0].set_title('Trend (grad 2)')
 
-axes[2].plot(s)
-axes[2].set_title('Sezon (2 frecvente)')
-axes[2].grid(alpha=0.3)
+axes[1].plot(s)
+axes[1].set_title('Sezon (2 frecvente)')
 
-axes[3].plot(n)
-axes[3].set_title('Zgomot alb gaussian')
-axes[3].grid(alpha=0.3)
+axes[2].plot(n)
+axes[2].set_title('Zgomot alb gaussian')
+
+axes[3].plot(y)
+axes[3].set_title('Serie temporala completa')
 
 plt.tight_layout()
 plt.savefig('plots_lab8/ex_a_componente.pdf')
@@ -41,8 +41,7 @@ plt.savefig('plots_lab8/ex_a_componente.png')
 plt.close()
 print("Serie generata\n")
 
-# b) Autocorelatie
-print("b) Autocorelatie")
+# b) Autocorelatie (masoara similaritatea dintre serie si versiuni deplasate)
 def autocorr(x, lag):
     if lag == 0:
         return 1.0
@@ -73,7 +72,6 @@ plt.tight_layout()
 plt.savefig('plots_lab8/ex_b_autocorr.pdf')
 plt.savefig('plots_lab8/ex_b_autocorr.png')
 plt.close()
-print("Autocorelatie: masoara similaritatea dintre serie si versiuni deplasate\n")
 
 # c) Model AR
 print("c) Model AR")
