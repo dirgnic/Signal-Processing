@@ -3,6 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
+from statsmodels.tsa.arima.model import ARIMA
 
 np.random.seed(42)
 os.makedirs('plots_lab9', exist_ok=True)
@@ -46,9 +47,8 @@ def exponential_smoothing_double(y, alpha):
     b[0] = y[1] - y[0] if len(y) > 1 else 0
     
     for i in range(1, len(y)):
-        s_prev = s[i-1]
         s[i] = alpha * y[i] + (1 - alpha) * (s[i-1] + b[i-1])
-        b[i] = alpha * (s[i] - s_prev) + (1 - alpha) * b[i-1]
+        b[i] = alpha * (s[i] - s[i-1]) + (1 - alpha) * b[i-1]
     
     return s
 
@@ -64,11 +64,10 @@ def exponential_smoothing_triple(y, alpha, beta, gamma, period):
         seas[i] = y[i] - s[0]
     
     for i in range(1, len(y)):
-        s_prev = s[i-1]
         seas_idx = i - period if i >= period else 0
         
         s[i] = alpha * (y[i] - seas[seas_idx]) + (1 - alpha) * (s[i-1] + b[i-1])
-        b[i] = beta * (s[i] - s_prev) + (1 - beta) * b[i-1]
+        b[i] = beta * (s[i] - s[i-1]) + (1 - beta) * b[i-1]
         seas[i] = gamma * (y[i] - s[i]) + (1 - gamma) * seas[seas_idx]
     
     return s + seas
@@ -279,8 +278,6 @@ print(f"   Parametri optimi: p={best_p}, q={best_q}, MSE={best_mse:.2f}\n")
 
 # ARIMA with statsmodels
 try:
-    from statsmodels.tsa.arima.model import ARIMA
-    
     print("   Fitting ARIMA model...")
     model_arima = ARIMA(y, order=(2, 0, 2))
     fitted_arima = model_arima.fit(method='yule_walker')
