@@ -83,6 +83,27 @@ print(f"2. Model AR(p={p})")
 print(f"   MSE: {mse_ar:.2f}")
 print(f"   Coeficienti non-zero: {np.sum(np.abs(ar_coeffs) > 1e-6)}\n")
 
+# Visualize AR matrix X
+X_ar, Y_ar = create_ar_matrix(y, p)
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+im0 = axes[0].imshow(X_ar[:30, :], aspect='auto', cmap='viridis')
+axes[0].set_title(f'Matricea AR X (primele 30 randuri)\nDimensiune: {X_ar.shape}')
+axes[0].set_xlabel('Lag (p)')
+axes[0].set_ylabel('Timp (t)')
+plt.colorbar(im0, ax=axes[0], label='y[t-lag]')
+
+axes[1].bar(range(p), ar_coeffs)
+axes[1].set_title('Coeficienti AR')
+axes[1].set_xlabel('Lag')
+axes[1].set_ylabel('Coeficient')
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('plots_lab10/ex2_ar_matrix.pdf')
+plt.savefig('plots_lab10/ex2_ar_matrix.png')
+plt.close()
+
 # Ex 3: Sparse AR models
 # Greedy method
 def fit_ar_greedy(y, p, max_nonzero):
@@ -186,6 +207,28 @@ plt.close()
 print("3. Sparse AR models")
 print(f"   Greedy: {np.sum(np.abs(greedy_coeffs) > 1e-6)} coef. non-zero, MSE={mse_greedy:.2f}")
 print(f"   L1: {np.sum(np.abs(l1_coeffs) > 1e-6)} coef. non-zero, MSE={mse_l1:.2f}\n")
+
+# Visualize coefficient comparison
+fig, ax = plt.subplots(figsize=(12, 5))
+x_pos = np.arange(p)
+width = 0.25
+
+ax.bar(x_pos - width, ar_coeffs, width, label='AR standard', alpha=0.8)
+ax.bar(x_pos, greedy_coeffs, width, label='Greedy', alpha=0.8)
+ax.bar(x_pos + width, l1_coeffs, width, label='L1', alpha=0.8)
+
+ax.set_xlabel('Lag')
+ax.set_ylabel('Coeficient')
+ax.set_title('Comparatie coeficienti: AR vs Greedy vs L1')
+ax.set_xticks(x_pos)
+ax.legend()
+ax.grid(True, alpha=0.3)
+ax.axhline(0, color='k', linewidth=0.5)
+
+plt.tight_layout()
+plt.savefig('plots_lab10/ex3_coef_comparison.pdf')
+plt.savefig('plots_lab10/ex3_coef_comparison.png')
+plt.close()
 
 
 # Ex 4: Polynomial roots using companion matrix
