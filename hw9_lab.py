@@ -10,12 +10,12 @@ os.makedirs('plots_lab9', exist_ok=True)
 
 print("Laborator 9 - Serii de timp - Partea 2\n")
 
-N = 1000
+N = 200
 t_vals = np.arange(N)
 
 def generate_time_series():
-    trend = 0.01 * t_vals**2 - 0.5 * t_vals + 10
-    seasonal = 5 * np.sin(2 * np.pi * t_vals / 50) + 3 * np.cos(2 * np.pi * t_vals / 100)
+    trend = 0.5 * t_vals + 10
+    seasonal = 10 * np.sin(2 * np.pi * t_vals / 20) * (1 + 0.02 * t_vals)
     noise = np.random.normal(0, 2, N)
     return trend + seasonal + noise
 
