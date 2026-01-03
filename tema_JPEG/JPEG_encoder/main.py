@@ -167,6 +167,47 @@ def task3_adaptive_mse():
     
     print(f"  Saved: output/task3_adaptive.png")
     
+    # Optional interactive mode: user-specified target MSE
+    try:
+        user_input = input("  Enter a target MSE for extra demo (or press Enter to skip): ")
+    except EOFError:
+        user_input = ""
+
+    if user_input.strip() != "":
+        try:
+            target_mse_user = float(user_input)
+            qf_user, achieved_mse_user, history_user = find_quality_for_target_mse(X, target_mse_user)
+            compressed_user, _, ratio_user = jpeg_compress_with_quality(X, qf_user)
+            psnr_user = 10 * np.log10(255**2 / achieved_mse_user) if achieved_mse_user > 0 else float('inf')
+
+            fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+            axes[0].imshow(X, cmap='gray')
+            axes[0].set_title('Original')
+            axes[0].axis('off')
+
+            axes[1].imshow(compressed_user, cmap='gray')
+            axes[1].set_title(f'JPEG (QF={qf_user})\nMSE={achieved_mse_user:.2f}, PSNR={psnr_user:.2f}dB')
+            axes[1].axis('off')
+
+            diff_user = np.abs(X.astype(np.float64) - compressed_user)
+            axes[2].imshow(diff_user, cmap='hot')
+            axes[2].set_title(f'Difference (target MSE={target_mse_user})\nRatio: {ratio_user:.2f}x')
+            axes[2].axis('off')
+
+            plt.tight_layout()
+            plt.savefig('output/task3_adaptive_user.png', dpi=150)
+            plt.close()
+
+            print(f"  User target MSE: {target_mse_user}")
+            print(f"  Found QF: {qf_user}")
+            print(f"  Achieved MSE: {achieved_mse_user:.4f}")
+            print(f"  PSNR: {psnr_user:.2f} dB")
+            print(f"  Compression ratio: {ratio_user:.2f}x")
+            print(f"  Saved: output/task3_adaptive_user.png")
+        except ValueError:
+            print("  Invalid input: please enter a numeric MSE value next time.")
+    
     return True
 
 
