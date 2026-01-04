@@ -22,7 +22,8 @@ from JPEG_encoder import (
     generate_synthetic_video, compress_video_mjpeg,
     jpeg_encode_block, build_huffman_tree, get_huffman_codes,
     compute_entropy, compute_average_code_length,
-    jpeg2000_like_compress_grayscale
+    jpeg2000_like_compress_grayscale,
+    jpeg2000_like_compress_grayscale_multilevel,
 )
 
 # Import test images
@@ -368,29 +369,34 @@ def bonus_jpeg2000_like():
     X_jpeg, ratio_jpeg = jpeg_compress_grayscale(X)
     mse_jpeg, psnr_jpeg = compute_metrics(X, X_jpeg)
 
-    # JPEG 2000-like: 1-level Haar wavelet + quantization
-    recon_wt, mse_wt, ratio_wt, stats = jpeg2000_like_compress_grayscale(
+    # JPEG 2000-like: 1-level vs multi-level Haar wavelet + quantization
+    recon_wt_1, mse_wt_1, ratio_wt_1, stats_1 = jpeg2000_like_compress_grayscale(
         X, step_LL=4.0, step_H=8.0
     )
-    psnr_wt = 10 * np.log10(255**2 / mse_wt) if mse_wt > 0 else float("inf")
+    psnr_wt_1 = 10 * np.log10(255**2 / mse_wt_1) if mse_wt_1 > 0 else float("inf")
 
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    recon_wt_L, mse_wt_L, ratio_wt_L, stats_L = jpeg2000_like_compress_grayscale_multilevel(
+        X, step_LL=4.0, step_H=8.0, levels=3
+    )
+    psnr_wt_L = 10 * np.log10(255**2 / mse_wt_L) if mse_wt_L > 0 else float("inf")
+
+    fig, axes = plt.subplots(1, 4, figsize=(12, 4))
 
     axes[0].imshow(X, cmap="gray")
-    axes[0].set_title("Original")
+    axes[0].set_title("Original", fontsize=11)
     axes[0].axis("off")
 
     axes[1].imshow(X_jpeg, cmap="gray")
-    axes[1].set_title(
-        f"JPEG (DCT)\nMSE={mse_jpeg:.2f}, PSNR={psnr_jpeg:.2f}dB\nRatio={ratio_jpeg:.2f}x"
-    )
+    axes[1].set_title("JPEG (DCT)", fontsize=11)
     axes[1].axis("off")
 
-    axes[2].imshow(recon_wt, cmap="gray")
-    axes[2].set_title(
-        f"JPEG 2000-like (Haar)\nMSE={mse_wt:.2f}, PSNR={psnr_wt:.2f}dB\nRatio={ratio_wt:.2f}x"
-    )
+    axes[2].imshow(recon_wt_1, cmap="gray")
+    axes[2].set_title("JP2K Haar L1", fontsize=11)
     axes[2].axis("off")
+
+    axes[3].imshow(recon_wt_L, cmap="gray")
+    axes[3].set_title("JP2K Haar L3", fontsize=11)
+    axes[3].axis("off")
 
     plt.tight_layout()
     plt.savefig("output/bonus_jpeg2000_like.png", dpi=150)
@@ -401,15 +407,25 @@ def bonus_jpeg2000_like():
     print(f"    MSE: {mse_jpeg:.4f}")
     print(f"    PSNR: {psnr_jpeg:.2f} dB")
     print(f"    Compression ratio (non-zero coeffs): {ratio_jpeg:.2f}x")
-    print("  --- JPEG 2000-like (Haar) ---")
-    print(f"    MSE: {mse_wt:.4f}")
-    print(f"    PSNR: {psnr_wt:.2f} dB")
-    print(f"    Compression ratio (non-zero coeffs): {ratio_wt:.2f}x")
+    print("  --- JPEG 2000-like (Haar, 1 level) ---")
+    print(f"    MSE: {mse_wt_1:.4f}")
+    print(f"    PSNR: {psnr_wt_1:.2f} dB")
+    print(f"    Compression ratio (non-zero coeffs): {ratio_wt_1:.2f}x")
     print(
         "    Non-zero wavelet coeffs:",
-        stats.get("nonzero_coeffs"),
+        stats_1.get("nonzero_coeffs"),
         "/",
-        stats.get("total_coeffs"),
+        stats_1.get("total_coeffs"),
+    )
+    print("  --- JPEG 2000-like (Haar, 3 levels) ---")
+    print(f"    MSE: {mse_wt_L:.4f}")
+    print(f"    PSNR: {psnr_wt_L:.2f} dB")
+    print(f"    Compression ratio (non-zero coeffs): {ratio_wt_L:.2f}x")
+    print(
+        "    Non-zero wavelet coeffs:",
+        stats_L.get("nonzero_coeffs"),
+        "/",
+        stats_L.get("total_coeffs"),
     )
     print("  Saved: output/bonus_jpeg2000_like.png")
 

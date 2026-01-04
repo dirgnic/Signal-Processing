@@ -35,7 +35,10 @@ from .huffman import (
     compute_average_code_length
 )
 
-from .jpeg2000 import jpeg2000_like_compress_grayscale
+from .jpeg2000 import (
+    jpeg2000_like_compress_grayscale,
+    jpeg2000_like_compress_grayscale_multilevel,
+)
 
 __all__ = [
     'Q_LUMINANCE',
@@ -57,5 +60,6 @@ __all__ = [
     'get_huffman_codes',
     'compute_entropy',
     'compute_average_code_length',
-    'jpeg2000_like_compress_grayscale'
+    'jpeg2000_like_compress_grayscale',
+    'jpeg2000_like_compress_grayscale_multilevel',
 ]
