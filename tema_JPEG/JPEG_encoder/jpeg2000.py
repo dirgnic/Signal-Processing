@@ -1,6 +1,6 @@
 """Toy JPEG 2000-style compressor using 2D Haar wavelet.
 
-This is NOT a full JPEG 2000 implementation, but a didactic
+This is not a full JPEG 2000 implementation, but a didactic
 approximation that highlights the main ideas:
 - wavelet transform instead of block DCT
 - multi-resolution decomposition (LL, LH, HL, HH subbands)
