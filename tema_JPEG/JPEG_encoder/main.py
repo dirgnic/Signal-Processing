@@ -21,7 +21,8 @@ from JPEG_encoder import (
     jpeg_compress_with_quality, find_quality_for_target_mse,
     generate_synthetic_video, compress_video_mjpeg,
     jpeg_encode_block, build_huffman_tree, get_huffman_codes,
-    compute_entropy, compute_average_code_length
+    compute_entropy, compute_average_code_length,
+    jpeg2000_like_compress_grayscale
 )
 
 # Import test images
@@ -355,6 +356,66 @@ def bonus_huffman():
     return True
 
 
+def bonus_jpeg2000_like():
+    """Bonus: JPEG 2000-like wavelet compression demo (grayscale)"""
+    print("\n" + "="*60)
+    print("BONUS: JPEG 2000-like (Haar Wavelet) Compression")
+    print("="*60)
+
+    X = ascent()
+
+    # Baseline: block-DCT JPEG from Task 1 (recompute here)
+    X_jpeg, ratio_jpeg = jpeg_compress_grayscale(X)
+    mse_jpeg, psnr_jpeg = compute_metrics(X, X_jpeg)
+
+    # JPEG 2000-like: 1-level Haar wavelet + quantization
+    recon_wt, mse_wt, ratio_wt, stats = jpeg2000_like_compress_grayscale(
+        X, step_LL=4.0, step_H=8.0
+    )
+    psnr_wt = 10 * np.log10(255**2 / mse_wt) if mse_wt > 0 else float("inf")
+
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+    axes[0].imshow(X, cmap="gray")
+    axes[0].set_title("Original")
+    axes[0].axis("off")
+
+    axes[1].imshow(X_jpeg, cmap="gray")
+    axes[1].set_title(
+        f"JPEG (DCT)\nMSE={mse_jpeg:.2f}, PSNR={psnr_jpeg:.2f}dB\nRatio={ratio_jpeg:.2f}x"
+    )
+    axes[1].axis("off")
+
+    axes[2].imshow(recon_wt, cmap="gray")
+    axes[2].set_title(
+        f"JPEG 2000-like (Haar)\nMSE={mse_wt:.2f}, PSNR={psnr_wt:.2f}dB\nRatio={ratio_wt:.2f}x"
+    )
+    axes[2].axis("off")
+
+    plt.tight_layout()
+    plt.savefig("output/bonus_jpeg2000_like.png", dpi=150)
+    plt.close()
+
+    print("  Grayscale test image size:", X.shape)
+    print("  --- JPEG (block DCT) ---")
+    print(f"    MSE: {mse_jpeg:.4f}")
+    print(f"    PSNR: {psnr_jpeg:.2f} dB")
+    print(f"    Compression ratio (non-zero coeffs): {ratio_jpeg:.2f}x")
+    print("  --- JPEG 2000-like (Haar) ---")
+    print(f"    MSE: {mse_wt:.4f}")
+    print(f"    PSNR: {psnr_wt:.2f} dB")
+    print(f"    Compression ratio (non-zero coeffs): {ratio_wt:.2f}x")
+    print(
+        "    Non-zero wavelet coeffs:",
+        stats.get("nonzero_coeffs"),
+        "/",
+        stats.get("total_coeffs"),
+    )
+    print("  Saved: output/bonus_jpeg2000_like.png")
+
+    return True
+
+
 def main():
     """Run all tasks"""
     print("\n" + "#"*60)
@@ -368,6 +429,7 @@ def main():
     success &= task3_adaptive_mse()
     success &= task4_video_mjpeg()
     success &= bonus_huffman()
+    success &= bonus_jpeg2000_like()
     
     print("\n" + "="*60)
     if success:
