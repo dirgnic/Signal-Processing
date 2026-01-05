@@ -1,0 +1,7 @@
+ex 4: Frecventa de esantionare pentru contrabas
+============================================================
+
+Frecventele contrabasului: 40 Hz - 200 Hz
+Latimea de banda (B): 160 Hz
+Frecventa minima de esantionare (teoretic, trece-banda): 320 Hz
+Frecventa minima de esantionare (practic, sigur): 400 Hz

@@ -1,0 +1,16 @@
+
+Top 4 frecvente principale din semnal:
+
+Frecventa (Hz)           Magnitudine      Perioada (ore)    Perioada (zile)   Aparitii/an
+
+0.000000015189      1222623.35    65406186.60        2725257.77          0.48
+0.000000030378       644088.24    32810393.43        1367099.73          0.96
+0.000011574074       495641.78      86399.25           3599.97        365.00
+0.000000045567       461221.83    21897544.52         912397.69          1.44
+
+Interpretarea frecventelor:
+
+1. Variatie semestriala (pattern la 6 luni)
+2. Variatie anuala (pattern anual)
+3. Variatie zilnica (trafic diferit in fiecare zi)
+4. Variatie periodica (aproximativ 254.0 zile)

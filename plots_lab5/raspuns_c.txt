@@ -1,0 +1,10 @@
+
+Daca semnalul a fost esantionat corect (fara aliere), frecventa maxima 
+prezenta in semnal este frecventa Nyquist:
+
+f_max = fs / 2 = 0.0001388889 Hz
+
+In termeni practici:
+f_max = 1 / (2 * 3600) Hz = 1 / 7200 Hz
+
+Aceasta inseamna ca cea mai rapida variatie detectabila este o perioada de 2 ore.

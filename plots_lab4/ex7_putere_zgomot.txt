@@ -1,0 +1,13 @@
+ex 7: Calculul puterii zgomotului
+Date:
+  Puterea semnalului: P_signal = 90 dB
+  Raport semnal-zgomot: SNR = 80 dB
+
+Formula: SNR = P_signal - P_noise
+
+Calcul:
+  P_noise = P_signal - SNR
+  P_noise = 90 dB - 80 dB
+  P_noise = 10 dB
+
+Raspuns: Puterea zgomotului este 10 dB

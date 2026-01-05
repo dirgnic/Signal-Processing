@@ -1,0 +1,9 @@
+
+Numar total de esantioane: 18288
+Esantioane pe zi: 24 
+Durata: 18288 / 24 = 762 zile
+
+Data de inceput: 2012-08-25 00:00:00
+Data de sfarsit: 2014-09-25 23:00:00
+
+Interval total: 761 zile

@@ -1,0 +1,8 @@
+
+Semnalul este esantionat o data pe ora.
+Frecventa de esantionare: 1 esantion/ora
+In Hz: fs = 1/3600 Hz = 0.0002777778 Hz
+
+Explicatie:
+- Un esantion pe ora inseamna T = 3600 secunde
+- Frecventa de esantionare fs = 1/T = 1/3600 Hz
