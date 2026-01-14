@@ -55,7 +55,11 @@ class BitW:
                 if s.acc == 0xFF: s.buf.append(0)
                 s.acc, s.n = 0, 0
     def flush(s):
-        if s.n: s.acc <<= (8-s.n); s.buf.append(s.acc&0xFF); s.acc, s.n = 0, 0
+        if s.n: 
+            s.acc = (s.acc<<(8-s.n)) | ((1<<(8-s.n))-1)
+            s.buf.append(s.acc&0xFF)
+            if s.acc == 0xFF: s.buf.append(0)
+            s.acc, s.n = 0, 0
 
 def _cat(v):
     if v == 0: return 0, 0
@@ -88,18 +92,20 @@ def _enc_blk(bw, blk, Q, dc_t, ac_t, pdc):
     zz = zigzag(qb)
     dc, diff = int(zz[0]), int(zz[0])-pdc
     c, b = _cat(diff)
-    cd, l = dc_t[c]; bw.write(cd, l)
+    cd, l = dc_t.get(c, dc_t.get(0, (0,1)))
+    bw.write(cd, l)
     if c > 0: bw.write(b, c)
     run = 0
     for k in range(1, 64):
         ac = int(zz[k])
         if ac == 0: run += 1; continue
-        while run > 15: cd, l = ac_t[0xF0]; bw.write(cd, l); run -= 16
+        while run > 15:
+            cd, l = ac_t.get(0xF0, ac_t.get(0, (0,1))); bw.write(cd, l); run -= 16
         c, b = _cat(ac)
-        cd, l = ac_t.get((run<<4)|c, ac_t[0]); bw.write(cd, l)
+        cd, l = ac_t.get((run<<4)|c, ac_t.get(0, (0,1))); bw.write(cd, l)
         if c > 0: bw.write(b, c)
         run = 0
-    if run > 0: cd, l = ac_t[0]; bw.write(cd, l)
+    if run > 0: cd, l = ac_t.get(0, (0,1)); bw.write(cd, l)
     return dc
 
 def enc_gray(img, qf=75):
@@ -158,36 +164,86 @@ def _scan(img, Q):
                 while run > 15: ac[0xF0] += 1; run -= 16
                 ac[(run<<4)|_c2(v)] += 1; run = 0
             ac[0] += 1
+            
+    if 0 not in ac: ac[0] = 1
+    if 0xF0 not in ac: ac[0xF0] = 1
+    for c in range(12):
+        if c not in dc: dc[c] = 1
     return dc, ac
 
 def _canon(freq):
     if not freq: return [0]*17, [], {}
+    
     h = [type('N',(object,),{'s':s,'f':f,'l':None,'r':None,'__lt__':lambda a,b:a.f<b.f})() for s,f in freq.items()]
     heapq.heapify(h)
     while len(h)>1:
         a,b = heapq.heappop(h), heapq.heappop(h)
         n = type('N',(object,),{'s':None,'f':a.f+b.f,'l':a,'r':b,'__lt__':lambda a,b:a.f<b.f})()
         heapq.heappush(h, n)
-    def gc(n,p='',c=None):
+    def gc(n,d=0,c=None):
         if c is None: c={}
-        if n.s is not None: c[n.s]=p or '0'
-        if n.l: gc(n.l,p+'0',c)
-        if n.r: gc(n.r,p+'1',c)
+        if n.s is not None: c[n.s]=max(1,d)
+        if n.l: gc(n.l,d+1,c)
+        if n.r: gc(n.r,d+1,c)
         return c
-    raw = gc(h[0]) if h else {}
-    lens = {s:min(len(c),16) for s,c in raw.items()}
-    syms = sorted(lens, key=lambda s:(lens[s],s))
-    bits, vals, codes = [0]*17, [], {}
+    lens = gc(h[0]) if h else {}
+    
+    bits = [0]*33
+    for l in lens.values(): bits[l] += 1
+ 
+    i = 32
+    while i > 16:
+        while bits[i] > 0:
+            j = i - 2
+            while bits[j] == 0: j -= 1
+            bits[i] -= 2
+            bits[i-1] += 1
+            bits[j+1] += 2
+            bits[j] -= 1
+        i -= 1
+
+    while bits[0] > 0:
+        j = 1
+        while bits[j] == 0: j += 1
+        bits[0] -= 1
+        bits[j] -= 1
+        bits[j-1] += 2 if j > 1 else 1
+    
+    # Kraft inequality must be strict: sum(bits[i] * 2^(16-i)) < 2^16
+    kraft = sum(bits[i] * (1 << (16-i)) for i in range(1, 17))
+    if kraft >= (1 << 16):
+        for i in range(16, 0, -1):
+            if bits[i] > 0 and i < 16:
+                bits[i] -= 1
+                bits[i+1] += 2
+                break
+    syms = sorted(lens.keys(), key=lambda s:(lens[s],s))
+    new_lens = {}
+    idx = 0
+    for ln in range(1, 17):
+        for _ in range(bits[ln]):
+            if idx < len(syms):
+                new_lens[syms[idx]] = ln
+                idx += 1
+    syms = sorted(new_lens.keys(), key=lambda s:(new_lens[s],s))
+    bits_out, vals, codes = [0]*17, [], {}
     code, pl = 0, 0
     for s in syms:
-        ln = lens[s]; code <<= (ln-pl); codes[s] = (code,ln); bits[ln] += 1; vals.append(s); code += 1; pl = ln
-    return bits, vals, codes
+        ln = new_lens[s]
+        code <<= (ln-pl)
+        codes[s] = (code,ln)
+        bits_out[ln] += 1
+        vals.append(s)
+        code += 1
+        pl = ln
+    return bits_out, vals, codes
 
 def enc_gray_a(img, qf=75):
     img = np.asarray(img).astype(np.uint8)
     h, w = img.shape; Q = scaleQ(Q_Y, qf)
-    dcb, dcv, dcc = _canon(_scan(img, Q)[0])
-    acb, acv, acc = _canon(_scan(img, Q)[1])
+    dc_freq, ac_freq = _scan(img, Q)
+    dcb, dcv, dcc = _canon(dc_freq)
+    acb, acv, acc = _canon(ac_freq)
     pad = np.pad(img, ((0,(8-h%8)%8),(0,(8-w%8)%8)), mode='edge')
     bw, pdc = BitW(), 0
     for i in range(0, pad.shape[0], 8):
